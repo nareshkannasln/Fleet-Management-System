@@ -1,0 +1,56 @@
+{
+ "actions": [],
+ "allow_rename": 1,
+ "autoname": "field:vehicle_no",
+ "creation": "2025-07-30 13:29:59.296570",
+ "doctype": "DocType",
+ "engine": "InnoDB",
+ "field_order": [
+  "fleet_child_section",
+  "vehicle_no",
+  "card_no",
+  "pin"
+ ],
+ "fields": [
+  {
+   "fieldname": "card_no",
+   "fieldtype": "Data",
+   "in_list_view": 1,
+   "label": "Card No"
+  },
+  {
+   "fieldname": "pin",
+   "fieldtype": "Data",
+   "in_list_view": 1,
+   "label": "PIN"
+  },
+  {
+   "fieldname": "vehicle_no",
+   "fieldtype": "Data",
+   "in_list_view": 1,
+   "label": "Vehicle No",
+   "options": "Fleet Card",
+   "unique": 1
+  },
+  {
+   "fieldname": "fleet_child_section",
+   "fieldtype": "Section Break",
+   "label": "Fleet Cards"
+  }
+ ],
+ "grid_page_length": 50,
+ "index_web_pages_for_search": 1,
+ "istable": 1,
+ "links": [],
+ "modified": "2025-07-30 14:01:41.027098",
+ "modified_by": "Administrator",
+ "module": "Fuel Management",
+ "name": "Card Details",
+ "naming_rule": "By fieldname",
+ "owner": "Administrator",
+ "permissions": [],
+ "row_format": "Dynamic",
+ "sort_field": "modified",
+ "sort_order": "DESC",
+ "states": []
+}

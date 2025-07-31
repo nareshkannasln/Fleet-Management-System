@@ -1,0 +1,78 @@
+{
+ "actions": [],
+ "allow_rename": 1,
+ "creation": "2025-07-30 13:29:26.576912",
+ "doctype": "DocType",
+ "engine": "InnoDB",
+ "field_order": [
+  "fleet_card_details_section",
+  "transport_company",
+  "card_details",
+  "amended_from"
+ ],
+ "fields": [
+  {
+   "fieldname": "transport_company",
+   "fieldtype": "Link",
+   "label": "Transport Company",
+   "options": "Transport Company"
+  },
+  {
+   "fieldname": "card_details",
+   "fieldtype": "Table",
+   "label": "Card Details",
+   "options": "Card Details"
+  },
+  {
+   "fieldname": "fleet_card_details_section",
+   "fieldtype": "Section Break",
+   "label": "Fleet Card Details"
+  },
+  {
+   "fieldname": "amended_from",
+   "fieldtype": "Link",
+   "label": "Amended From",
+   "no_copy": 1,
+   "options": "Fleet Card",
+   "print_hide": 1,
+   "read_only": 1,
+   "search_index": 1
+  }
+ ],
+ "grid_page_length": 50,
+ "index_web_pages_for_search": 1,
+ "is_submittable": 1,
+ "links": [],
+ "modified": "2025-07-30 19:56:51.642414",
+ "modified_by": "Administrator",
+ "module": "Fuel Management",
+ "name": "Fleet Card",
+ "owner": "Administrator",
+ "permissions": [
+  {
+   "create": 1,
+   "delete": 1,
+   "email": 1,
+   "export": 1,
+   "print": 1,
+   "read": 1,
+   "report": 1,
+   "role": "System Manager",
+   "share": 1,
+   "write": 1
+  },
+  {
+   "email": 1,
+   "export": 1,
+   "print": 1,
+   "read": 1,
+   "report": 1,
+   "role": "Transport Company User",
+   "share": 1
+  }
+ ],
+ "row_format": "Dynamic",
+ "sort_field": "modified",
+ "sort_order": "DESC",
+ "states": []
+}
