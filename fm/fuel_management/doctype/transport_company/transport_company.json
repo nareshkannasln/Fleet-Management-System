@@ -1,7 +1,7 @@
 {
  "actions": [],
  "allow_rename": 1,
- "autoname": "field:name1",
+ "autoname": "TC-.####",
  "creation": "2025-07-30 13:28:19.778711",
  "doctype": "DocType",
  "engine": "InnoDB",
@@ -10,7 +10,10 @@
   "name1",
   "email",
   "phone",
-  "amended_from"
+  "wallet_id",
+  "amended_from",
+  "api_secret",
+  "api_key"
  ],
  "fields": [
   {
@@ -33,7 +36,7 @@
   {
    "allow_on_submit": 1,
    "fieldname": "phone",
-   "fieldtype": "Phone",
+   "fieldtype": "Data",
    "in_list_view": 1,
    "label": "Phone",
    "reqd": 1
@@ -53,16 +56,34 @@
    "print_hide": 1,
    "read_only": 1,
    "search_index": 1
+  },
+  {
+   "fieldname": "wallet_id",
+   "fieldtype": "Data",
+   "in_list_view": 1,
+   "label": "Wallet ID",
+   "read_only": 1,
+   "unique": 1
+  },
+  {
+   "fieldname": "api_secret",
+   "fieldtype": "Password",
+   "label": "API Secret"
+  },
+  {
+   "fieldname": "api_key",
+   "fieldtype": "Password",
+   "label": "API key"
   }
  ],
  "grid_page_length": 50,
  "index_web_pages_for_search": 1,
  "links": [],
- "modified": "2025-07-30 23:06:14.437549",
+ "modified": "2025-08-01 18:32:22.241826",
  "modified_by": "Administrator",
  "module": "Fuel Management",
  "name": "Transport Company",
- "naming_rule": "By fieldname",
+ "naming_rule": "Expression (old style)",
  "owner": "Administrator",
  "permissions": [
   {

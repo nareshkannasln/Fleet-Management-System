@@ -1,0 +1,19 @@
+{
+ "content": null,
+ "creation": "2025-08-01 13:31:58.450162",
+ "docstatus": 0,
+ "doctype": "Page",
+ "idx": 0,
+ "modified": "2025-08-01 13:32:05.097278",
+ "modified_by": "Administrator",
+ "module": "Fuel Management",
+ "name": "customer-details",
+ "owner": "Administrator",
+ "page_name": "customer-details",
+ "roles": [],
+ "script": null,
+ "standard": "Yes",
+ "style": null,
+ "system_page": 1,
+ "title": "Customer Details"
+}

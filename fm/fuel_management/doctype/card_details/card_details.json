@@ -16,11 +16,13 @@
    "fieldname": "card_no",
    "fieldtype": "Data",
    "in_list_view": 1,
-   "label": "Card No"
+   "label": "Card No",
+   "read_only": 1,
+   "unique": 1
   },
   {
    "fieldname": "pin",
-   "fieldtype": "Data",
+   "fieldtype": "Password",
    "in_list_view": 1,
    "label": "PIN"
   },
@@ -30,6 +32,7 @@
    "in_list_view": 1,
    "label": "Vehicle No",
    "options": "Fleet Card",
+   "reqd": 1,
    "unique": 1
   },
   {
@@ -42,7 +45,7 @@
  "index_web_pages_for_search": 1,
  "istable": 1,
  "links": [],
- "modified": "2025-07-30 14:01:41.027098",
+ "modified": "2025-08-01 16:28:12.917762",
  "modified_by": "Administrator",
  "module": "Fuel Management",
  "name": "Card Details",
