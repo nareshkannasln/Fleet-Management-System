@@ -1,12 +1,13 @@
 {
  "actions": [],
  "allow_rename": 1,
+ "autoname": "FC-.####",
  "creation": "2025-07-30 13:29:26.576912",
  "doctype": "DocType",
  "engine": "InnoDB",
  "field_order": [
   "fleet_card_details_section",
-  "company_id",
+  "transport_company",
   "card_details"
  ],
  "fields": [
@@ -22,8 +23,9 @@
    "label": "Fleet Card Details"
   },
   {
-   "fieldname": "company_id",
+   "fieldname": "transport_company",
    "fieldtype": "Link",
+   "in_list_view": 1,
    "label": "Company ID",
    "options": "Transport Company",
    "read_only": 1
@@ -32,10 +34,11 @@
  "grid_page_length": 50,
  "index_web_pages_for_search": 1,
  "links": [],
- "modified": "2025-08-01 18:56:17.188870",
+ "modified": "2025-08-03 15:41:43.780375",
  "modified_by": "Administrator",
  "module": "Fuel Management",
  "name": "Fleet Card",
+ "naming_rule": "Expression (old style)",
  "owner": "Administrator",
  "permissions": [
   {
@@ -52,6 +55,7 @@
   },
   {
    "create": 1,
+   "delete": 1,
    "email": 1,
    "export": 1,
    "print": 1,

@@ -7,6 +7,7 @@
  "field_order": [
   "fuel_transaction_section",
   "card_no",
+  "wallet_id",
   "amount",
   "litre",
   "pay"
@@ -36,15 +37,20 @@
    "fieldname": "fuel_transaction_section",
    "fieldtype": "Section Break",
    "label": "Fuel Transaction"
+  },
+  {
+   "fieldname": "wallet_id",
+   "fieldtype": "Data",
+   "label": "Wallet ID"
   }
  ],
  "grid_page_length": 50,
  "index_web_pages_for_search": 1,
  "links": [],
- "modified": "2025-07-30 13:58:56.613807",
+ "modified": "2025-08-03 15:18:48.563266",
  "modified_by": "Administrator",
  "module": "Fuel Management",
- "name": "Fuel Transaction Log",
+ "name": "Fuel Transaction",
  "owner": "Administrator",
  "permissions": [
   {

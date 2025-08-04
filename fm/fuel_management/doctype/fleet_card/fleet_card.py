@@ -6,5 +6,4 @@ from frappe.model.document import Document
 
 
 class FleetCard(Document):
-	def autoname(self):
-		self.name = self.card_details[0].vehicle_no
+	pass
