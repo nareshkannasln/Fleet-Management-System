@@ -8,6 +8,7 @@
  "field_order": [
   "fleet_card_details_section",
   "transport_company",
+  "wallet_id",
   "card_details"
  ],
  "fields": [
@@ -29,12 +30,18 @@
    "label": "Company ID",
    "options": "Transport Company",
    "read_only": 1
+  },
+  {
+   "fetch_from": "transport_company.wallet_id",
+   "fieldname": "wallet_id",
+   "fieldtype": "Data",
+   "label": "Wallet Id"
   }
  ],
  "grid_page_length": 50,
  "index_web_pages_for_search": 1,
  "links": [],
- "modified": "2025-08-03 15:41:43.780375",
+ "modified": "2025-08-05 15:32:04.139052",
  "modified_by": "Administrator",
  "module": "Fuel Management",
  "name": "Fleet Card",
