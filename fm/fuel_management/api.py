@@ -1,151 +1,177 @@
 import frappe
+from frappe import _
 from frappe.utils import validate_email_address
 from frappe.utils.password import update_password
-import random
-
-
+from fm.fuel_management.utils import (
+    create_wallet_account,
+    is_valid_vehicle_no,
+    generate_card_no,
+    generate_pin
+)
 
 @frappe.whitelist(allow_guest=True)
 def onboard_transport_company(company_name, email, phone):
-    validate_email_address(email.strip(), throw=True)
+    try:
+        validate_email_address(email.strip(), throw=True)
 
-    if frappe.db.exists("User", {"email": email}):
+        if frappe.db.exists("User", {"email": email}):
+            return {
+                "status": "fail",
+                "message": "User already exists"
+            }
+
+        default_password = frappe.generate_hash(length=8)
+
+        user = frappe.new_doc("User")
+        user.update({
+            "email": email,
+            "send_welcome_email": 0,
+            "first_name": company_name,
+            "mobile_no": phone
+        })
+        user.append("roles", {"role": "Transport Company User"})
+        user.insert(ignore_permissions=True)
+
+        update_password(user.name, default_password)
+
+        last_wallet_id = frappe.db.get_value(
+            "Transport Company", {}, "wallet_id", order_by="creation desc"
+        )
+        new_number = int(last_wallet_id[4:]) + 1 if last_wallet_id and last_wallet_id.startswith("FLID") else 1
+        wallet_id = f"FLID{new_number:04d}"
+
+        company = frappe.new_doc("Transport Company")
+        company.update({
+            "company_name": company_name,
+            "email": email,
+            "phone": phone,
+            "user": email,
+            "wallet_id": wallet_id,
+            "password": default_password  # Remove or mask if needed in production
+        })
+        company.insert(ignore_permissions=True)
+
+        wallet_account_name = create_wallet_account(
+            erp_company="Bharat Petroleum Corporation Ltd",
+            company_name=company_name,
+            wallet_id=wallet_id
+        )
+        frappe.db.set_value("Transport Company", company.name, "erp_account", wallet_account_name)
+
         return {
-            "status": "exists",
-            "message": "User already exists",
-            "user_email": email
+            "status": "success",
+            "message": "Transport Company and User created",
+            "data": {
+                "company_id": company.name,
+                "wallet_id": wallet_id,
+                "user_email": email,
+                "password": default_password
+            }
         }
-
-    default_password = frappe.generate_hash(length=8)
-
-    user = frappe.new_doc("User")
-    user.update({
-        "email": email,
-        "send_welcome_email": 0,
-        "first_name": company_name,
-        "mobile_no": phone
-    })
-    user.append("roles", {"role": "Transport Company User"})
-    user.insert(ignore_permissions=True)
-
-    update_password(user.name, default_password)
-
-    last_wallet_id = frappe.db.get_value(
-        "Transport Company", {}, "wallet_id", order_by="creation desc"
-    )
-    if last_wallet_id and last_wallet_id.startswith("FLID"):
-        new_number = int(last_wallet_id[4:]) + 1
-    else:
-        new_number = 1
-    wallet_id = f"FLID{new_number:04d}"
-
-    company = frappe.new_doc("Transport Company")
-    company.update({
-        "company_name": company_name,  # changed from name1
-        "email": email,
-        "phone": phone,
-        "user": email,
-        "wallet_id": wallet_id,
-        "password": default_password
-    })
-    company.insert(ignore_permissions=True)
-
-    return {
-        "status": "success",
-        "message": "Transport Company and User created",
-        "company_name": company_name,  # updated key
-        "email": email,
-        "phone": phone,
-        "wallet_id": wallet_id,
-        "company_id": company.name,
-        "password": default_password
-    }
-
-
-
+    except frappe.ValidationError as ve:
+        return {"status": "fail", "message": str(ve)}
+    except Exception:
+        frappe.log_error(frappe.get_traceback(), "Onboard Transport Company Error")
+        return {"status": "error", "message": _("Something went wrong. Please try again later.")}
 
 
 @frappe.whitelist()
 def create_fleet_card(company_id, vehicle_list, card_list=None, pin_list=None):
-    if frappe.session.user == "Guest":
-        frappe.throw(_("You must be logged in to perform this action."))
+    try:
+        if frappe.session.user == "Guest":
+            return {"status": "fail", "message": _("Login required.")}
+        
+        if not isinstance(vehicle_list, list) or not vehicle_list:
+            return {"status": "fail", "message": _("vehicle_list must be a non-empty list.")}
 
-    if not isinstance(vehicle_list, list):
-        frappe.throw(_("vehicle_list must be a list."))
+        transport_company = frappe.db.get_value("Transport Company", {"name": company_id}, "name")
+        if not transport_company:
+            return {"status": "fail", "message": _("Invalid company_id.")}
 
-    transport_company = frappe.db.get_value(
-        "Transport Company",
-        {"name": company_id},
-        "name" 
-    )
+        invalid_vehicles, duplicate_vehicles = [], []
+        fleet_cards = frappe.db.get_all("Fleet Card", filters={"transport_company": company_id}, pluck="name")
 
-    if not transport_company:
-        frappe.throw(_("Invalid company_id: No such Transport Company found."))
+        for v in vehicle_list:
+            if not is_valid_vehicle_no(v):
+                invalid_vehicles.append(v)
+            elif frappe.db.exists({
+                "doctype": "Card Details",
+                "vehicle_no": v,
+                "parenttype": "Fleet Card",
+                "parent": ["in", fleet_cards]
+            }):
+                duplicate_vehicles.append(v)
 
-    doc = frappe.new_doc("Fleet Card")
-    doc.transport_company = transport_company
+        if invalid_vehicles:
+            return {"status": "fail", "message": _("Invalid vehicle number(s): ") + ", ".join(invalid_vehicles)}
+        
+        # if duplicate_vehicles:
+        #     return {"status": "fail", "message": _("Vehicle number(s) already assigned for this company: ") + ", ".join(duplicate_vehicles)}
 
-    for i, vehicle_no in enumerate(vehicle_list):
-        card_no = (
-            card_list[i] if card_list and i < len(card_list)
-            else str(random.randint(10**15, 10**16 - 1))
-        )
-        pin = (
-            pin_list[i] if pin_list and i < len(pin_list)
-            else str(random.randint(1000, 9999))
-        )
+        doc = frappe.new_doc("Fleet Card")
+        doc.transport_company = transport_company
 
-        doc.append("card_details", {
-            "vehicle_no": vehicle_no,
-            "card_no": card_no,
-            "pin": pin
-        })
+        raw_pin_map = {}
+        for i, vehicle_no in enumerate(vehicle_list):
+            card_no = card_list[i] if card_list and i < len(card_list) else generate_card_no()
+            pin = pin_list[i] if pin_list and i < len(pin_list) else generate_pin()
+            doc.append("card_details", {
+                "vehicle_no": vehicle_no,
+                "card_no": card_no,
+                "pin": pin  # Storing raw PIN
+            })
+            raw_pin_map[vehicle_no] = {"card_no": card_no, "pin": pin}
 
-    doc.insert()
+        doc.save(ignore_permissions=True)
 
-    return {
-        "status": "success",
-        "fleet_card_id": doc.name,
-        "transport_company": transport_company,
-        "card_details": [
-            {
-                "vehicle_no": row.vehicle_no,
-                "card_no": row.card_no,
-                "pin": row.pin
-            } for row in doc.card_details
-        ]
-    }
+        return {
+            "status": "success",
+            "message": _("Fleet cards created successfully."),
+            "data": {
+                "fleet_card_id": doc.name,
+                "card_details": [
+                    {
+                        "vehicle_no": row.vehicle_no,
+                        "card_no": raw_pin_map[row.vehicle_no]["card_no"],
+                        "pin": raw_pin_map[row.vehicle_no]["pin"]
+                    } for row in doc.card_details
+                ]
+            }
+        }
+    except frappe.ValidationError as ve:
+        return {"status": "fail", "message": str(ve)}
+    except Exception:
+        frappe.log_error(frappe.get_traceback(), "Create Fleet Card Error")
+        return {"status": "error", "message": _("Something went wrong. Please try again later.")}
 
 
 @frappe.whitelist()
-def change_fleet_card_pin(card_no, old_pin, new_pin):
+def change_card_pin(card_no, old_pin, new_pin):
     if frappe.session.user == "Guest":
-        frappe.throw("You must be logged in to perform this action.")
+        return {"status": "fail", "message": _("Login required to change PIN.")}
 
     if not card_no or not old_pin or not new_pin:
-        frappe.throw("card_no, old_pin, and new_pin are all required.")
+        return {"status": "fail", "message": _("All fields (card_no, old_pin, new_pin) are required.")}
 
-    # Fetch the Fleet Card Detail with the provided card number
-    card = frappe.get_all("Fleet Card Detail", filters={"card_no": card_no}, fields=["name", "parent", "pin"])
+    card = frappe.db.get_value(
+        "Card Details",
+        {"card_no": card_no.strip()},
+        ["name", "parent"],
+        as_dict=True
+    )
+
     if not card:
-        frappe.throw("Invalid card number.")
+        return {"status": "fail", "message": _("Invalid card number.")}
 
-    # Verify old PIN
-    if card[0].pin != old_pin:
-        frappe.throw("Old PIN is incorrect.")
+    stored_pin = frappe.db.get_value("Card Details", card.name, "pin")
+    if old_pin != stored_pin:
+        return {"status": "fail", "message": _("Incorrect old PIN.")}
 
-    # Update new PIN
-    card_doc = frappe.get_doc("Fleet Card", card[0].parent)
-    for row in card_doc.card_details:
-        if row.card_no == card_no:
-            row.pin = new_pin
-            break
-
-    card_doc.save(ignore_permissions=True)
-    frappe.db.commit()
-
-    return {
-        "status": "success",
-        "message": "PIN changed successfully",  
-        "card_no": card_no
-    }
+    try:
+        frappe.db.set_value("Card Details", card.name, "pin", new_pin)  # Storing raw new PIN
+        return {"status": "success", "message": _("PIN updated successfully.")}
+    except frappe.ValidationError as e:
+        return {"status": "fail", "message": str(e)}
+    except Exception:
+        frappe.log_error(frappe.get_traceback(), "Change Card PIN Error")
+        return {"status": "error", "message": _("Something went wrong. Please try again later.")}

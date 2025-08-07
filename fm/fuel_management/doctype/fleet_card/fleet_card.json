@@ -6,7 +6,7 @@
  "doctype": "DocType",
  "engine": "InnoDB",
  "field_order": [
-  "fleet_card_details_section",
+  "section_break_jkok",
   "transport_company",
   "wallet_id",
   "card_details"
@@ -17,11 +17,6 @@
    "fieldtype": "Table",
    "label": "Card Details",
    "options": "Card Details"
-  },
-  {
-   "fieldname": "fleet_card_details_section",
-   "fieldtype": "Section Break",
-   "label": "Fleet Card Details"
   },
   {
    "fieldname": "transport_company",
@@ -36,12 +31,16 @@
    "fieldname": "wallet_id",
    "fieldtype": "Data",
    "label": "Wallet Id"
+  },
+  {
+   "fieldname": "section_break_jkok",
+   "fieldtype": "Section Break"
   }
  ],
  "grid_page_length": 50,
  "index_web_pages_for_search": 1,
  "links": [],
- "modified": "2025-08-05 15:32:04.139052",
+ "modified": "2025-08-07 11:27:00.931479",
  "modified_by": "Administrator",
  "module": "Fuel Management",
  "name": "Fleet Card",

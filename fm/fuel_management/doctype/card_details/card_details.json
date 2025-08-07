@@ -1,7 +1,6 @@
 {
  "actions": [],
  "allow_rename": 1,
- "autoname": "field:vehicle_no",
  "creation": "2025-07-30 13:29:59.296570",
  "doctype": "DocType",
  "engine": "InnoDB",
@@ -22,7 +21,7 @@
   },
   {
    "fieldname": "pin",
-   "fieldtype": "Data",
+   "fieldtype": "Password",
    "in_list_view": 1,
    "label": "PIN"
   },
@@ -45,11 +44,10 @@
  "index_web_pages_for_search": 1,
  "istable": 1,
  "links": [],
- "modified": "2025-08-02 15:19:41.089826",
+ "modified": "2025-08-06 16:54:40.191822",
  "modified_by": "Administrator",
  "module": "Fuel Management",
  "name": "Card Details",
- "naming_rule": "By fieldname",
  "owner": "Administrator",
  "permissions": [],
  "row_format": "Dynamic",

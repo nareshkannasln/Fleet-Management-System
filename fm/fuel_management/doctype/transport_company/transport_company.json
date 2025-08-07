@@ -13,7 +13,7 @@
   "wallet_id",
   "password",
   "amended_from",
-  "is_enabled"
+  "erp_account"
  ],
  "fields": [
   {
@@ -22,7 +22,8 @@
    "fieldtype": "Data",
    "in_list_view": 1,
    "label": "Email",
-   "reqd": 1
+   "reqd": 1,
+   "unique": 1
   },
   {
    "allow_on_submit": 1,
@@ -30,7 +31,8 @@
    "fieldtype": "Data",
    "in_list_view": 1,
    "label": "Phone",
-   "reqd": 1
+   "reqd": 1,
+   "unique": 1
   },
   {
    "allow_on_submit": 1,
@@ -60,7 +62,8 @@
    "fieldname": "password",
    "fieldtype": "Data",
    "in_list_view": 1,
-   "label": "Password"
+   "label": "Password",
+   "unique": 1
   },
   {
    "allow_on_submit": 1,
@@ -68,20 +71,20 @@
    "fieldtype": "Data",
    "in_list_view": 1,
    "label": "Company Name",
-   "reqd": 1,
-   "unique": 1
+   "reqd": 1
   },
   {
-   "default": "0",
-   "fieldname": "is_enabled",
-   "fieldtype": "Check",
-   "label": "is enabled"
+   "fieldname": "erp_account",
+   "fieldtype": "Link",
+   "label": "ERP Account",
+   "options": "Account",
+   "unique": 1
   }
  ],
  "grid_page_length": 50,
  "index_web_pages_for_search": 1,
  "links": [],
- "modified": "2025-08-05 15:58:22.928994",
+ "modified": "2025-08-07 15:28:32.169924",
  "modified_by": "Administrator",
  "module": "Fuel Management",
  "name": "Transport Company",
